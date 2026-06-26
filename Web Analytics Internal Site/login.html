@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Web Analytics Portal – Login</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ── Login Page Overrides & Enhancements ── */
+    :root {
+      --brand: #00008f;
+      --brand-dark: #00006a;
+      --brand-light: #e8e8f5;
+      --accent: #4f6ef7;
+      --accent2: #7c3aed;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #030318;
+      overflow: hidden;
+    }
+
+    /* ── Animated background ── */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,0,143,0.55) 0%, transparent 70%),
+                  radial-gradient(ellipse 60% 50% at 80% 80%, rgba(79,110,247,0.2) 0%, transparent 60%),
+                  radial-gradient(ellipse 50% 40% at 10% 90%, rgba(124,58,237,0.15) 0%, transparent 60%),
+                  #030318;
+    }
+
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridShift 20s linear infinite;
+    }
+
+    @keyframes gridShift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(40px, 40px); }
+    }
+
+    /* floating orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: 0.35;
+      animation: orbFloat linear infinite;
+    }
+    .orb1 { width: 300px; height: 300px; background: #00008f; top: -80px; left: -80px; animation-duration: 18s; }
+    .orb2 { width: 220px; height: 220px; background: #4f6ef7; bottom: 10%; right: 5%; animation-duration: 14s; animation-delay: -5s; }
+    .orb3 { width: 180px; height: 180px; background: #7c3aed; top: 40%; left: 15%; animation-duration: 22s; animation-delay: -9s; }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -25px) scale(1.08); }
+      66% { transform: translate(-20px, 15px) scale(0.95); }
+    }
+
+    /* pulse rings */
+    .pulse-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(79,110,247,0.15);
+      animation: pulseExpand 4s ease-out infinite;
+    }
+    .pulse-ring:nth-child(1) { width: 400px; height: 400px; top: -200px; right: -100px; animation-delay: 0s; }
+    .pulse-ring:nth-child(2) { width: 500px; height: 500px; top: -250px; right: -150px; animation-delay: 1.3s; }
+    .pulse-ring:nth-child(3) { width: 600px; height: 600px; top: -300px; right: -200px; animation-delay: 2.6s; }
+
+    @keyframes pulseExpand {
+      0% { opacity: 0.5; transform: scale(0.8); }
+      100% { opacity: 0; transform: scale(1.2); }
+    }
+
+    /* animated data particles */
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(79,110,247,0.6);
+      animation: particleDrift linear infinite;
+    }
+
+    @keyframes particleDrift {
+      0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100px) translateX(var(--drift, 30px)); opacity: 0; }
+    }
+
+    /* ── Login wrapper ── */
+    .login-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 460px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      animation: wrapperEnter 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes wrapperEnter {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Login card ── */
+    .login-card {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05) inset,
+        0 32px 64px rgba(0,0,0,0.5),
+        0 0 80px rgba(0,0,143,0.2);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* card shine sweep */
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+      animation: shineSweep 6s ease-in-out infinite;
+    }
+
+    @keyframes shineSweep {
+      0% { left: -100%; }
+      50% { left: 150%; }
+      100% { left: 150%; }
+    }
+
+    /* ── Brand logo area ── */
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .brand-logo {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+
+    .brand-logo svg {
+      width: 48px;
+      height: 48px;
+    }
+
+    /* analytics pulse ring on logo */
+    .logo-pulse {
+      position: absolute;
+      inset: -4px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(79,110,247,0.5);
+      animation: logoPulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes logoPulse {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 0; transform: scale(1.2); }
+    }
+
+    .brand-text-block { display: flex; flex-direction: column; gap: 2px; }
+
+    .brand-name {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .brand-tagline {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .login-divider-top {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      margin-bottom: 24px;
+    }
+
+    /* ── Login mode tabs ── */
+    .login-mode-tabs {
+      display: flex;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 28px;
+      gap: 4px;
+    }
+
+    .mode-tab {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      color: rgba(255,255,255,0.45);
+      background: transparent;
+      position: relative;
+      letter-spacing: 0.01em;
+    }
+
+    .mode-tab .tab-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      transition: background 0.25s;
+    }
+
+    .mode-tab.internal .tab-dot { background: rgba(34,197,94,0.4); }
+    .mode-tab.external .tab-dot { background: rgba(79,110,247,0.4); }
+
+    .mode-tab.active {
+      color: white;
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.12) inset;
+    }
+
+    .mode-tab.active.internal .tab-dot { background: #22c55e; }
+    .mode-tab.active.external .tab-dot { background: #4f6ef7; }
+
+    .mode-tab:hover:not(.active) {
+      color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* ── Section panels ── */
+    .login-section {
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .login-section.hidden-section {
+      display: none;
+    }
+
+    /* ── Internal login panel ── */
+    .internal-panel {
+      text-align: center;
+      padding: 8px 0 12px;
+    }
+
+    .internal-welcome {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .internal-sub {
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .internal-user-card {
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.25);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      text-align: left;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .internal-user-card:hover {
+      border-color: rgba(34,197,94,0.45);
+      box-shadow: 0 0 24px rgba(34,197,94,0.1);
+    }
+
+    .user-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #00008f, #4f6ef7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(0,0,143,0.4);
+    }
+
+    .user-info { flex: 1; }
+
+    .user-name {
+      font-size: 0.93rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 2px;
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .user-status {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #22c55e;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+      animation: blink 1.8s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .btn-internal-login {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.97rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      letter-spacing: 0.01em;
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(34,197,94,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-internal-login::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn-internal-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(34,197,94,0.45);
+    }
+
+    .btn-internal-login:hover::before { opacity: 1; }
+    .btn-internal-login:active { transform: translateY(0); }
+
+    .btn-internal-login svg { transition: transform 0.2s; }
+    .btn-internal-login:hover svg { transform: translateX(3px); }
+
+    /* ── External panel – form fields ── */
+    .login-heading {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .login-sub {
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 7px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      font-size: 0.93rem;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      outline: none;
+    }
+
+    .form-group input::placeholder { color: rgba(255,255,255,0.25); }
+
+    .form-group input:focus {
+      border-color: rgba(79,110,247,0.6);
+      background: rgba(79,110,247,0.08);
+      box-shadow: 0 0 0 3px rgba(79,110,247,0.15);
+    }
+
+    .form-group input.error {
+      border-color: rgba(239,68,68,0.7);
+      background: rgba(239,68,68,0.07);
+    }
+
+    .password-wrap { position: relative; }
+    .password-wrap input { padding-right: 46px; }
+
+    .toggle-pw {
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.3);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      transition: color 0.15s;
+    }
+
+    .toggle-pw:hover { color: rgba(255,255,255,0.7); }
+
+    .field-error {
+      display: block;
+      font-size: 0.73rem;
+      color: #f87171;
+      margin-top: 5px;
+      min-height: 14px;
+    }
+
+    .login-alert {
+      padding: 11px 15px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      margin-bottom: 16px;
+      font-weight: 500;
+      animation: alertSlide 0.3s ease;
+    }
+
+    @keyframes alertSlide {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-alert.error {
+      background: rgba(239,68,68,0.12);
+      color: #fca5a5;
+      border: 1px solid rgba(239,68,68,0.3);
+    }
+
+    .login-alert.success {
+      background: rgba(34,197,94,0.12);
+      color: #86efac;
+      border: 1px solid rgba(34,197,94,0.3);
+    }
+
+    .login-alert.hidden { display: none; }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #00008f 0%, #4f6ef7 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.97rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      letter-spacing: 0.01em;
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(0,0,143,0.4);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 16px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(79,110,247,0.45);
+    }
+
+    .btn-primary:hover::before { opacity: 1; }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-loader {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .login-hint {
+      text-align: center;
+      font-size: 0.76rem;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .login-hint code {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.6);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    /* ── Footer ── */
+    .login-footer {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.2);
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Success overlay ── */
+    .success-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(3,3,24,0);
+      pointer-events: none;
+      transition: background 0.4s;
+    }
+
+    .success-overlay.show {
+      background: rgba(3,3,24,0.85);
+      pointer-events: all;
+    }
+
+    .success-checkmark {
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .success-overlay.show .success-checkmark {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .check-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 40px rgba(34,197,94,0.5);
+      animation: checkPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes checkPulse {
+      0%, 100% { box-shadow: 0 0 40px rgba(34,197,94,0.5); }
+      50% { box-shadow: 0 0 60px rgba(34,197,94,0.8); }
+    }
+
+    .success-text {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .login-card { padding: 28px 20px; border-radius: 16px; }
+      .internal-welcome { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated Background -->
+  <div class="bg-canvas">
+    <div class="bg-gradient"></div>
+    <div class="grid-lines"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+    <div class="pulse-ring"></div>
+    <div class="pulse-ring"></div>
+    <div class="pulse-ring"></div>
+    <!-- particles injected by JS -->
+  </div>
+
+  <!-- Success Overlay -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-checkmark">
+      <div class="check-circle">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <p class="success-text">Access Granted · Redirecting…</p>
+    </div>
+  </div>
+
+  <div class="login-wrapper">
+    <div class="login-card">
+
+      <!-- Brand -->
+      <div class="login-brand">
+        <div class="brand-logo">
+          <div class="logo-pulse"></div>
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="48" height="48" rx="12" fill="url(#logoGrad)"/>
+            <!-- Bar chart -->
+            <rect x="8" y="28" width="6" height="12" rx="2" fill="rgba(255,255,255,0.5)"/>
+            <rect x="16" y="22" width="6" height="18" rx="2" fill="rgba(255,255,255,0.7)"/>
+            <rect x="24" y="16" width="6" height="24" rx="2" fill="rgba(255,255,255,0.9)"/>
+            <rect x="32" y="10" width="6" height="30" rx="2" fill="white"/>
+            <!-- trend line -->
+            <path d="M11 26 L19 20 L27 14 L35 8" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 2"/>
+            <!-- sparkle dot -->
+            <circle cx="35" cy="8" r="3" fill="white"/>
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="48" y2="48">
+                <stop offset="0%" stop-color="#00008f"/>
+                <stop offset="100%" stop-color="#4f6ef7"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-text-block">
+          <div class="brand-name">Web Analytics Portal</div>
+          <div class="brand-tagline">Internal Analytics Hub</div>
+        </div>
+      </div>
+
+      <div class="login-divider-top"></div>
+
+      <!-- Mode Switcher -->
+      <div class="login-mode-tabs">
+        <button class="mode-tab internal active" onclick="switchMode('internal')" id="tab-internal">
+          <span class="tab-dot"></span>
+          Internal Access
+        </button>
+        <button class="mode-tab external" onclick="switchMode('external')" id="tab-external">
+          <span class="tab-dot"></span>
+          External Login
+        </button>
+      </div>
+
+      <!-- ── INTERNAL PANEL ── -->
+      <div class="login-section" id="section-internal">
+        <div class="internal-panel">
+          <h2 class="internal-welcome">Welcome back 👋</h2>
+          <p class="internal-sub">Your session is recognized. Click below to access the portal instantly.</p>
+
+          <div class="internal-user-card">
+            <div class="user-avatar">📊</div>
+            <div class="user-info">
+              <div class="user-name">Team Analytics</div>
+              <div class="user-role">Web Analytics · Internal Member</div>
+            </div>
+            <div class="user-status">
+              <span class="status-dot"></span>
+              Active
+            </div>
+          </div>
+
+          <button class="btn-internal-login" onclick="handleInternalLogin()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            <span id="internal-btn-text">Enter Portal</span>
+            <span id="internal-btn-loader" class="btn-loader hidden"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── EXTERNAL PANEL ── -->
+      <div class="login-section hidden-section" id="section-external">
+        <h2 class="login-heading">Sign in</h2>
+        <p class="login-sub">Enter your credentials to access the analytics dashboard</p>
+
+        <div class="form-group">
+          <label for="username">Username / Email</label>
+          <input type="text" id="username" placeholder="your@email.com" autocomplete="username"/>
+          <span class="field-error" id="username-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-wrap">
+            <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password"/>
+            <button class="toggle-pw" type="button" onclick="togglePassword()" aria-label="Toggle password visibility">
+              <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+          <span class="field-error" id="password-error"></span>
+        </div>
+
+        <div id="login-alert" class="login-alert hidden"></div>
+
+        <button class="btn-primary btn-login" onclick="handleLogin()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span id="btn-text">Sign In</span>
+          <span id="btn-loader" class="btn-loader hidden"></span>
+        </button>
+
+        <p class="login-hint">Demo: <code>teamwebanalytics.com</code> / <code>demo</code></p>
+      </div>
+
+    </div>
+
+    <p class="login-footer">© 2025 Web Analytics Portal · Internal Use Only</p>
+  </div>
+
+  <script src="login.js"></script>
+  <script>
+    // Spawn floating particles
+    (function spawnParticles() {
+      const canvas = document.querySelector('.bg-canvas');
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText = `
+          left: ${Math.random() * 100}%;
+          animation-duration: ${8 + Math.random() * 14}s;
+          animation-delay: ${-Math.random() * 15}s;
+          --drift: ${(Math.random() - 0.5) * 80}px;
+          opacity: ${0.3 + Math.random() * 0.5};
+          width: ${2 + Math.random() * 3}px;
+          height: ${2 + Math.random() * 3}px;
+        `;
+        canvas.appendChild(p);
+      }
+    })();
+  </script>
+</body>
+</html>
