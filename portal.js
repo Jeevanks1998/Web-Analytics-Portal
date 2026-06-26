@@ -44,7 +44,7 @@ const pptData = {
   },
   pii: {
     title: 'PII Walkthrough',
-    filename: 'C:\Users\B739RT\OneDrive - AXA\Documents\1st and 2nd PII Data\PII Walkthrough.pptx',
+    filename: 'files/PII Walkthrough.pptx',
     author: 'Jeevan KS'
   }
 };
